@@ -70,82 +70,6 @@ inner join företag f on lf.företag_org_nummer = f.företag_org_nummer
 order by lg.program_id;
 
 
--- Utbildningsledare som ansvarar för vilka klasser
-SELECT bo.program_id || bo.år as klass, p.förnamn ||' '|| p.efternamn as Utbildningsledare, s.skolnamn
-FROM personal p
-inner join klass kl on p.personal_id = kl.personal_id
-inner join yrkesroll y on p.yrkes_id = y.yrkes_id
-inner join beviljad_omgång bo on kl.bo_id = bo.bo_id
-inner join skola s on kl.skol_id = s.skol_id 
-inner join "program" p2 on bo.program_id = p2.program_id 
-where y.yrkes_id = 1;
-
-
--- Vilka Studenter som bor på vilka adresser med deras personnummer
-select s.förnamn, s.efternamn,pu.personnummer ,a.gatuadress, st.stad
-from student s
-inner join personuppgift pu on s.pu_id = pu.pu_id
-inner join adress a on  pu.adress_id = a.adress_id
-inner join stad st on a.stad_id = st.stad_id 
-
-
-
-
-
--- I vilken stad pluggar studenterna 
-SELECT
-  s.förnamn,
-  s.efternamn,
-  st.stad
-FROM student s
-JOIN skola sk ON s.skol_id = sk.skol_id
-JOIN adress a ON sk.adress_id = a.adress_id
-JOIN stad st ON a.stad_id = st.stad_id;
-
-
--- Visa studenters betyg
-SELECT
-  s.förnamn,
-  s.efternamn,
-  k.kursnamn,
-  kb.betyg
-FROM student s
-JOIN kursbetyg kb ON s.student_id = kb.student_id
-JOIN kurs k ON kb.kurskod = k.kurskod;
-
-
-
--- Vilken personal är kopplad till vilka kurstillfällen
-SELECT
-  p.förnamn,
-  p.efternamn,
-  y.titel AS yrkesroll,
-  k.kursnamn
-FROM personal p
-JOIN yrkesroll y ON p.yrkes_id = y.yrkes_id
-JOIN kurstillfälle kt ON p.personal_id = kt.personal_id
-JOIN kurs k ON kt.kurskod = k.kurskod;
-
-
-
--- Studenter och vilket program de går
-SELECT
-  s.förnamn,
-  s.efternamn,
-  p.programnamn
-FROM student s
-JOIN antagen_student ast ON s.student_id = ast.student_id
-JOIN klass kl ON ast.klass_id = kl.klass_id
-JOIN beviljad_omgång bo ON kl.bo_id = bo.bo_id
-JOIN program p ON bo.program_id = p.program_id;
-
-
--- Vilken yrkesroll har personalen
-SELECT
-  p.förnamn || ' ' || p.efternamn as personal,
-  y.titel AS yrkesroll
-FROM personal p
-JOIN yrkesroll y ON p.yrkes_id = y.yrkes_id;
 
 
 -- Hämta alla skolor och deras adresser
@@ -165,6 +89,40 @@ SELECT
   sk.skolnamn
 FROM student st
 JOIN skola sk ON st.skol_id = sk.skol_id;
+
+
+
+-- Studenter och vilket program de går
+SELECT
+  s.förnamn,
+  s.efternamn,
+  p.programnamn
+FROM student s
+JOIN antagen_student ast ON s.student_id = ast.student_id
+JOIN klass kl ON ast.klass_id = kl.klass_id
+JOIN beviljad_omgång bo ON kl.bo_id = bo.bo_id
+JOIN program p ON bo.program_id = p.program_id;
+
+
+
+-- Visa studenters betyg
+SELECT
+  s.förnamn,
+  s.efternamn,
+  k.kursnamn,
+  kb.betyg
+FROM student s
+JOIN kursbetyg kb ON s.student_id = kb.student_id
+JOIN kurs k ON kb.kurskod = k.kurskod;
+
+
+
+-- Vilken yrkesroll har personalen
+SELECT
+  p.förnamn || ' ' || p.efternamn as personal,
+  y.titel AS yrkesroll
+FROM personal p
+JOIN yrkesroll y ON p.yrkes_id = y.yrkes_id;
 
 
 
@@ -194,18 +152,6 @@ JOIN beviljad_omgång bo ON kl.bo_id = bo.bo_id
 JOIN program pr ON bo.program_id = pr.program_id
 JOIN student st ON ast.student_id = st.student_id;
 
-
--- Konsulter, vilket företag de tillhör och vilka klasser de undervisar
-SELECT
-  p.förnamn || ' ' || p.efternamn as konsult,
-  k.timpris,
-  kb.bolagsnamn,
-  ku.kursnamn
-FROM konsult k
-JOIN personal p ON k.personal_id = p.personal_id
-JOIN konsultbolag kb ON k.org_nummer = kb.org_nummer
-JOIN kurstillfälle kt ON p.personal_id = kt.personal_id
-JOIN kurs ku ON kt.kurskod = ku.kurskod;
 
 
 -- Konsulter, vilket företag de tillhör och vilka klasser de undervisar
